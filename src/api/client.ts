@@ -1,22 +1,26 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GATEWAY_URL } from './config';
+
+// Lazy import to avoid circular dependency (store → client → store)
+function getStore() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require('../store/authStore').useAuthStore;
+}
 
 export function makeClient(baseURL: string) {
   const client = axios.create({ baseURL, timeout: 15_000 });
 
-  client.interceptors.request.use(async (config) => {
-    const token = await AsyncStorage.getItem('crm_token');
+  client.interceptors.request.use((config) => {
+    const token = getStore().getState().token;
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   });
 
   client.interceptors.response.use(
     (res) => res,
-    async (err) => {
+    (err) => {
       if (err.response?.status === 401) {
-        await AsyncStorage.removeItem('crm_token');
-        await AsyncStorage.removeItem('crm_user');
+        getStore().getState().logout();
       }
       return Promise.reject(err);
     },

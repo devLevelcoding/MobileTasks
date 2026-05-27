@@ -29,7 +29,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const res = await authApi.login(username.trim(), password.trim());
-      await setAuth(res.data.accessToken, res.data.user, sid);
+      await setAuth(res.data.access_token, res.data.user, sid);
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Login failed. Check your credentials.';
       Alert.alert('Login failed', Array.isArray(msg) ? msg.join('\n') : msg);
