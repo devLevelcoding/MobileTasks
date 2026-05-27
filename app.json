@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "MobileTasks",
+    "slug": "mobile-tasks",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0a0a0f"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sassfactory.mobiletasks"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0a0a0f"
+      },
+      "package": "com.sassfactory.mobiletasks"
+    },
+    "plugins": [
+      [
+        "@react-native-async-storage/async-storage",
+        { "excludeSessionIsolation": false }
+      ]
+    ]
+  }
+}
