@@ -50,7 +50,14 @@ export interface PaginatedResponse<T> {
 
 // ── Operator API (mobile-primary) ─────────────────────────────────────────────
 
+export interface MyTasksAutoResponse extends PaginatedResponse<AgencyTask> {
+  agencyIds: number[];
+}
+
 export const operatorApi = {
+  myTasksAuto: (params?: { page?: number; limit?: number; status?: number }) =>
+    api.get<MyTasksAutoResponse>('/shoptasks/my', { params }),
+
   myTasks: (shopId: number, params?: { page?: number; limit?: number }) =>
     api.get<PaginatedResponse<AgencyTask>>(`/shoptasks/my/${shopId}`, { params }),
 

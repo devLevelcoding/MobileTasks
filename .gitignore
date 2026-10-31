@@ -8,3 +8,7 @@ web-build/
 *.key
 *.mobileprovision
 *.orig.*
+
+# downloaded Chrome for testing, and test screenshots
+chrome/
+screen*.png

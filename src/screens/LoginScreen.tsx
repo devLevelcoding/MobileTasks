@@ -10,26 +10,24 @@ import { useAuthStore } from '../store/authStore';
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [shopId, setShopId]     = useState('');
   const [loading, setLoading]   = useState(false);
 
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const setAuth      = useAuthStore((s) => s.setAuth);
+  const setAgencyIds = useAuthStore((s) => s.setAgencyIds);
 
   async function handleLogin() {
-    if (!username.trim() || !password.trim() || !shopId.trim()) {
-      Alert.alert('Missing fields', 'Please fill in all fields.');
+    if (!username.trim() || !password.trim()) {
+      Alert.alert('Missing fields', 'Please enter username and password.');
       return;
     }
-    const sid = Number(shopId);
-    if (isNaN(sid) || sid <= 0) {
-      Alert.alert('Invalid Shop ID', 'Shop ID must be a positive number.');
-      return;
-    }
-
     setLoading(true);
     try {
       const res = await authApi.login(username.trim(), password.trim());
-      await setAuth(res.data.access_token, res.data.user, sid);
+      await setAuth(res.data.access_token, res.data.user);
+      // Resolve agencies from JWT — no manual shop ID needed
+      const { operatorApi } = await import('../api/tasks');
+      const myRes = await operatorApi.myTasksAuto({ page: 1, limit: 1 });
+      setAgencyIds(myRes.data.agencyIds);
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Login failed. Check your credentials.';
       Alert.alert('Login failed', Array.isArray(msg) ? msg.join('\n') : msg);
@@ -74,19 +72,6 @@ export default function LoginScreen() {
               placeholderTextColor={C.textMuted}
               secureTextEntry
             />
-          </View>
-
-          <View style={s.field}>
-            <Text style={S.label}>Shop / Agency ID</Text>
-            <TextInput
-              style={s.input}
-              value={shopId}
-              onChangeText={setShopId}
-              placeholder="e.g. 42"
-              placeholderTextColor={C.textMuted}
-              keyboardType="number-pad"
-            />
-            <Text style={s.hint}>Your agency shop ID — ask your manager if unsure</Text>
           </View>
 
           <Pressable
